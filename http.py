@@ -1,23 +1,23 @@
 """
   Copyright notice
   ================
-  
+
   Copyright (C) 2011
       Roberto Paleari     <roberto.paleari@gmail.com>
       Alessandro Reina    <alessandro.reina@gmail.com>
-  
+
   This program is free software: you can redistribute it and/or modify it under
   the terms of the GNU General Public License as published by the Free Software
   Foundation, either version 3 of the License, or (at your option) any later
   version.
-  
+
   HyperDbg is distributed in the hope that it will be useful, but WITHOUT ANY
   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
   A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public License along with
   this program. If not, see <http://www.gnu.org/licenses/>.
-  
+
 """
 
 import datetime
@@ -99,7 +99,7 @@ class HTTPMessage():
                 chunk = data.read(chunklen)
                 body += chunk
 
-                if chunklen == 0: 
+                if chunklen == 0:
                     break
 
                 # Read trailing CRLF
@@ -123,9 +123,9 @@ class HTTPMessage():
         elif 'Proxy-Connection' in self.headers:
             if self.headers['Proxy-Connection'][0] == 'keep-alive':
                 return True
-            
+
         return False
-            
+
     def setPeer(self, h, link = True):
         self.peer = h
         if link:
@@ -140,7 +140,7 @@ class HTTPMessage():
             if n.lower() == "content-length":
                 self.headers[n][0] = len(self.body)
 
-    # Hack to fix HTTPS request 
+    # Hack to fix HTTPS request
     @staticmethod
     def _fixURLMalformed(scheme, url, headers):
         if ((url.find('http') != 0) and (url[0] == '/')):
@@ -206,9 +206,9 @@ class HTTPRequest(HTTPMessage):
         # Read request line
         reqline = data.readline().rstrip(HTTPMessage.EOL)
 
-        if reqline == '': 
+        if reqline == '':
             return None
-        
+
         method, url, proto = reqline.split()
 
         # Read headers & body
@@ -233,7 +233,7 @@ class HTTPRequest(HTTPMessage):
                     port = 80
                 else:
                     port = 443
-                
+
             host = r.hostname
 
         assert host is not None and len(host) > 0, "[!] Cannot find target host in URL '%s'" % self.url
@@ -270,6 +270,9 @@ class HTTPRequest(HTTPMessage):
         elif m == "connect": r = HTTPRequest.METHOD_CONNECT
         elif m == "unknown": r = HTTPRequest.METHOD_UNKNOWN
         return r
+
+    def getRawBody(self):
+        return self.body
 
     def getParams(self, typez = None):
         params = {}
@@ -321,7 +324,7 @@ class HTTPResponse(HTTPMessage):
 	    for i in v:
 		s += "%s: %s" % (n, i)
 		s += HTTPMessage.EOL
-		
+
         s += HTTPMessage.EOL
 
         # Body
